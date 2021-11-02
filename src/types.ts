@@ -1,26 +1,13 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface CloudioQuery extends DataQuery {
-  queryText?: string;
-  constant: number;
+  endpointFriendlyName?: string;
+  endpointUUID?: string;
+  attribute?: string;
 }
 
-export const defaultQuery: Partial<CloudioQuery> = {
-  constant: 6.5,
-};
+export const defaultQuery: Partial<CloudioQuery> = {};
 
-/**
- * These are options configured for each DataSource instance
- */
-export interface CloudioDataSourceOptions extends DataSourceJsonData {
-  scheme?: string;
-  host?: string;
-  username?: string;
-}
+export interface CloudioDataSourceOptions extends DataSourceJsonData {}
 
-/**
- * Value that is used in the backend, but never sent over HTTP to the frontend
- */
-export interface CloudioSecureJsonData {
-  password?: string;
-}
+export interface CloudioSecureJsonData {}
