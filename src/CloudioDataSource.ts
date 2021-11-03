@@ -43,27 +43,26 @@ export class CloudioDataSource extends DataSourceApi<CloudioQuery, CloudioDataSo
         const data = options.targets.map(target => {
             const query = defaults(target, defaultQuery);
 
-            return this.doGetRequest('/history/' + query.endpointUUID + '/' + query.attribute +
+            return this.doGetRequest('/history/' + query.endpoint?.uuid + '/' + query.attribute?.path +
                 '?from=' + from +
                 '&to=' + to +
-                '&max=' + maxDataPoints +
-                '&resampleInterval=' + intervalMs + 'ms')
+                '&max=' + (maxDataPoints || 1000) +
+                '&resampleInterval=' + intervalMs + 'ms' +
+                '&resampleFunction=' + query.resampleFunction)
                 .then((result: Array<any>) => {
-                    console.log(result);
                     return new MutableDataFrame({
                         refId: query.refId,
                         fields: [
                             {name: 'Time', values: result.map(r => dateTimeParse(r.time)), type: FieldType.time},
-                            {name: query.endpointFriendlyName + ': ' + query.attribute, values: result.map(r => r.value), type: FieldType.number},
+                            {name: query.endpoint?.friendlyName + ': ' + query.attribute?.path, values: result.map(r => r.value), type: FieldType.number},
                         ],
                     });
                 });
         });
 
         return Promise.all(data).then(data => {
-                console.log(data);
-                return {data};
-            });
+            return {data};
+        });
     }
 
     async testDatasource() {
