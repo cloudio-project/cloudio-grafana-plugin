@@ -54,7 +54,7 @@ export class CloudioDataSource extends DataSourceApi<CloudioQuery, CloudioDataSo
                     return new MutableDataFrame({
                         refId: query.refId,
                         fields: [
-                            {name: 'Time', values: result.map(r => dateTimeParse(r.time)), type: FieldType.time},
+                            {name: 'Time', values: result.map(r => dateTimeParse(r.time, {timeZone: "UTC"})), type: FieldType.time},
                             {name: query.endpoint?.friendlyName + ': ' + query.attribute?.path, values: result.map(r => r.value), type: FieldType.number},
                         ],
                     });
