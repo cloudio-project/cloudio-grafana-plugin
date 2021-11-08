@@ -35,9 +35,10 @@ export class CloudioDataSource extends DataSourceApi<CloudioQuery, CloudioDataSo
     }
 
     query(options: DataQueryRequest<CloudioQuery>): Promise<DataQueryResponse> {
-        const {range, maxDataPoints, intervalMs} = options;
+        const {range, interval, intervalMs} = options;
         const from = range!.from.toISOString();
         const to = range!.to.toISOString();
+        const delta = (range!.to.unix() - range!.from.unix()) * 1000;
 
         // Return a constant for each query.
         const data = options.targets.map(target => {
@@ -46,8 +47,8 @@ export class CloudioDataSource extends DataSourceApi<CloudioQuery, CloudioDataSo
             return this.doGetRequest('/history/' + query.endpoint?.uuid + '/' + query.attribute?.path +
                 '?from=' + from +
                 '&to=' + to +
-                '&max=' + (maxDataPoints || 1000) +
-                '&resampleInterval=' + intervalMs + 'ms' +
+                '&max=' + Math.floor(delta / intervalMs + 1) +
+                '&resampleInterval=' + interval +
                 '&resampleFunction=' + query.resampleFunction)
                 .then((result: Array<any>) => {
                     return new MutableDataFrame({
